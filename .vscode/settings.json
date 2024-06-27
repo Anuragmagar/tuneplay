@@ -1,0 +1,9 @@
+{
+    "workbench.colorCustomizations": {
+        "[Darcula Theme from IntelliJ]": {
+            // "sideBar.foreground": "#000000",
+            "editor.background": "#161616",
+            // "editor.foreground": "#000000",
+        }
+    }
+}
