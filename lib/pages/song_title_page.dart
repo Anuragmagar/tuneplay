@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:audio_app/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_room/on_audio_room.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:text_scroll/text_scroll.dart';
 
@@ -15,35 +17,77 @@ class SongTitlePage extends ConsumerStatefulWidget {
 }
 
 class _SongTitlePageState extends ConsumerState<SongTitlePage> {
-  late StreamSubscription<int?> indexStream;
+  // late StreamSubscription<int?> indexStream;
+  final OnAudioRoom _audioRoom = OnAudioRoom();
+  bool isFavourite = false;
 
-  @override
-  void dispose() {
-    indexStream.cancel();
-    super.dispose();
+  late StreamSubscription<int?> indexStream;
+  List<SongModel>? songs;
+  late SongModel song;
+
+  isFav(SongModel song) async {
+    bool fav = await _audioRoom.checkIn(
+      RoomType.FAVORITES,
+      song.id,
+      // song.getMap.toFavoritesEntity()
+    );
+    print('from favourite $fav');
+    setState(() {
+      isFavourite = fav;
+    });
   }
 
   @override
-  Widget build(BuildContext context) {
-    final player = ref.read(playerProvider);
+  void didChangeDependencies() async {
+    // final player = ref.read(playerProvider);
+    // final songs = ref.read(songListProvider);
+
+    // int songIndex = player.currentIndex!;
+    // SongModel song = songs![songIndex];
+
+    super.didChangeDependencies();
     final playingFrom = ref.watch(playingFromProvider);
-    late final songs;
     if (playingFrom == 0) {
       songs = ref.watch(songListProvider);
     } else if (playingFrom == 1) {
       songs = ref.watch(recentSongListProvider);
     }
+
+    final player = ref.read(playerProvider);
     int songIndex = player.currentIndex!;
-    SongModel song = songs![songIndex];
+    song = songs![songIndex];
+    isFav(song);
+
     indexStream = player.currentIndexStream.listen((p) {
-      if (p != songIndex) {
-        setState(() {
-          songIndex = p!;
-          song = songs[songIndex];
-        });
+      if (p != null && p != songIndex) {
+        print('is fav invoked');
+        songIndex = p;
+        song = songs![songIndex];
+        isFav(song);
+        setState(() {});
       }
     });
+  }
 
+  @override
+  void dispose() {
+    indexStream.cancel();
+    // _audioRoom.closeRoom();
+
+    super.dispose();
+  }
+
+  check() async {
+    List<FavoritesEntity> queryResult = await OnAudioRoom().queryFavorites(
+        // 100, //Default: 50
+        // true, //Default: false
+        // RoomSortType.TITLE //Default: null
+        );
+    print(queryResult);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
@@ -101,9 +145,37 @@ class _SongTitlePageState extends ConsumerState<SongTitlePage> {
             ],
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.only(left: 8.0),
-          child: Icon(PhosphorIconsRegular.heart),
+        GestureDetector(
+          onTap: () async {
+            print('adding');
+            await _audioRoom.addTo(
+              RoomType.FAVORITES, // Specify the room type
+              song.getMap.toFavoritesEntity(),
+              ignoreDuplicate: false, // Avoid the same song
+            );
+
+            // print(addToResult);
+            // bool isAdded = await _audioRoom.checkIn(
+            //   RoomType.FAVORITES,
+            //   song.id,
+            // );
+            // print('$isAdded');
+            // final ool = await isFav(song);
+            // print(ool);
+            // await isFav(song);
+            await check();
+            setState(() {
+              isFavourite = true;
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: Icon(
+              isFavourite
+                  ? PhosphorIconsFill.heart
+                  : PhosphorIconsRegular.heart,
+            ),
+          ),
         )
       ],
     );

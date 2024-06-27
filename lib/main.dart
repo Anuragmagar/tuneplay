@@ -14,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_room/on_audio_room.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -29,6 +30,8 @@ Future<void> main() async {
 
   await Hive.initFlutter();
   await Hive.openBox('permissionIsGranted');
+
+  await OnAudioRoom().initRoom();
 
   runApp(const ProviderScope(child: MyApp()));
 }

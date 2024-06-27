@@ -92,6 +92,8 @@ class _SongsPageState extends ConsumerState<SongsPage> {
         .read(songsCountProvider.notifier)
         .update((state) => filteredAudios.length);
 
+    _createPlaylist(filteredAudios);
+
     setState(() {
       loading = false;
     });
@@ -138,6 +140,7 @@ class _SongsPageState extends ConsumerState<SongsPage> {
   Widget build(BuildContext context) {
     final songs = ref.watch(songListProvider);
     final miniplayer = ref.watch(isMiniplayerOpenProvider);
+    final player = ref.watch(playerProvider);
 
     print("rebuilding songs page");
     // if (songs != null) {
@@ -205,7 +208,16 @@ class _SongsPageState extends ConsumerState<SongsPage> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      _createPlaylist(songs);
+                      ref
+                          .read(isMiniplayerOpenProvider.notifier)
+                          .update((state) => true);
+                      ref
+                          .read(playingFromProvider.notifier)
+                          .update((state) => 0);
+
+                      player.setAudioSource(playlist,
+                          initialIndex: index, initialPosition: Duration.zero);
+                      player.play();
                     },
                     child: SongTile(
                       // index: index, playlist: playlist, song: songs[index]);

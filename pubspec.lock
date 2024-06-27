@@ -552,6 +552,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  nanoid:
+    dependency: transitive
+    description:
+      name: nanoid
+      sha256: be3f8752d9046c825df2f3914195151eb876f3ad64b9d833dd0b799b77b8759e
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   on_audio_query:
     dependency: "direct main"
     description:
@@ -592,6 +600,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.6.0"
+  on_audio_room:
+    dependency: "direct main"
+    description:
+      name: on_audio_room
+      sha256: "3ba03b6038cd3d89581f156bd9fc222fe79bd5201c16297a44cb01a5436f37dd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.1+1"
   overflow_text_animated:
     dependency: "direct main"
     description:

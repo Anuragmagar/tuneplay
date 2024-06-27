@@ -41,7 +41,6 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     _generateGradientFromImage();
@@ -126,7 +125,6 @@ class _PlayerScreenState extends ConsumerState<PlayerScreen>
 
   @override
   void didUpdateWidget(covariant PlayerScreen oldWidget) {
-    // TODO: implement didUpdateWidget
     super.didUpdateWidget(oldWidget);
     _generateGradientFromImage();
   }

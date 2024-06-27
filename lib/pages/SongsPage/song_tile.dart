@@ -96,7 +96,6 @@ class _SongTileState extends ConsumerState<SongTile> {
 
   @override
   Widget build(BuildContext context) {
-    final player = ref.watch(playerProvider);
     final songs = ref.watch(songListProvider);
 
     if (songs == null) {
