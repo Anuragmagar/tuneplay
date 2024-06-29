@@ -37,6 +37,13 @@ class _SongTitlePageState extends ConsumerState<SongTitlePage> {
     });
   }
 
+  addToRecent(song) async {
+    await OnAudioRoom().addTo(
+      RoomType.LAST_PLAYED,
+      song.getMap.toLastPlayedEntity(0),
+    );
+  }
+
   @override
   void didChangeDependencies() async {
     // final player = ref.read(playerProvider);
@@ -64,6 +71,7 @@ class _SongTitlePageState extends ConsumerState<SongTitlePage> {
         songIndex = p;
         song = songs![songIndex];
         isFav(song);
+        addToRecent(song);
         setState(() {});
       }
     });
@@ -77,14 +85,14 @@ class _SongTitlePageState extends ConsumerState<SongTitlePage> {
     super.dispose();
   }
 
-  check() async {
-    List<FavoritesEntity> queryResult = await OnAudioRoom().queryFavorites(
-        // 100, //Default: 50
-        // true, //Default: false
-        // RoomSortType.TITLE //Default: null
-        );
-    print(queryResult);
-  }
+  // check() async {
+  //   List<FavoritesEntity> queryResult = await OnAudioRoom().queryFavorites(
+  //       // 100, //Default: 50
+  //       // true, //Default: false
+  //       // RoomSortType.TITLE //Default: null
+  //       );
+  //   print(queryResult);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +156,7 @@ class _SongTitlePageState extends ConsumerState<SongTitlePage> {
         GestureDetector(
           onTap: () async {
             print('adding');
-            await _audioRoom.addTo(
+            final add = await _audioRoom.addTo(
               RoomType.FAVORITES, // Specify the room type
               song.getMap.toFavoritesEntity(),
               ignoreDuplicate: false, // Avoid the same song
@@ -163,10 +171,24 @@ class _SongTitlePageState extends ConsumerState<SongTitlePage> {
             // final ool = await isFav(song);
             // print(ool);
             // await isFav(song);
-            await check();
-            setState(() {
-              isFavourite = true;
-            });
+            // await check();
+            if (add != 0) {
+              setState(() {
+                isFavourite = true;
+              });
+            } else {
+              final fav = await _audioRoom.queryFromFavorites(song.id);
+              if (fav != null) {
+                await _audioRoom.deleteFrom(
+                  RoomType.FAVORITES, // Specify the room type
+                  fav.key,
+                );
+
+                setState(() {
+                  isFavourite = false;
+                });
+              }
+            }
           },
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0),

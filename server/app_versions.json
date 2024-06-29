@@ -1,0 +1,42 @@
+[
+    {
+        "version": "1.0.0",
+        "change_log": "Lorem ipsum",
+        "description": "Lorem ipsum",
+        "download_link": "Lorem ipsum",
+        "publish_year": 2024,
+        "publish_month": 6,
+        "publish_day": 22,
+        "publish_date": "2024-6-22"
+    },
+    {
+        "version": "1.1.0",
+        "change_log": "Lorem ipsum",
+        "description": "Lorem ipsum",
+        "download_link": "Lorem ipsum",
+        "publish_year": 2024,
+        "publish_month": 5,
+        "publish_day": 22,
+        "publish_date": "2024-5-22"
+    },
+    {
+        "version": "1.2.0",
+        "change_log": "Lorem ipsum",
+        "description": "Lorem ipsum",
+        "download_link": "Lorem ipsum",
+        "publish_year": 2024,
+        "publish_month": 4,
+        "publish_day": 22,
+        "publish_date": "2024-4-22"
+    },
+    {
+        "version": "1.2.0",
+        "change_log": "Lorem ipsum",
+        "description": "Lorem ipsum",
+        "download_link": "Lorem ipsum",
+        "publish_year": 2024,
+        "publish_month": 7,
+        "publish_day": 22,
+        "publish_date": "2024-7-22"
+    }
+]

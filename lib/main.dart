@@ -2,6 +2,7 @@ import 'package:audio_app/pages/albums_page.dart';
 import 'package:audio_app/pages/artists_page.dart';
 import 'package:audio_app/pages/BottomMiniplayer/bottom_mini_player.dart';
 import 'package:audio_app/pages/bottom_navbar.dart';
+import 'package:audio_app/pages/drawer_page.dart';
 import 'package:audio_app/pages/home_page.dart';
 import 'package:audio_app/pages/playlists_page.dart';
 import 'package:audio_app/pages/songs_page.dart';
@@ -64,6 +65,7 @@ class MyHomePage extends ConsumerStatefulWidget {
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
   final OnAudioQuery audioQuery = OnAudioQuery();
+  final GlobalKey<ScaffoldState> _key = GlobalKey(); // Create a key
 
   final List<Widget> pages = [
     HomePage(),
@@ -88,8 +90,11 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     final int currentPage = ref.watch(currentPageProvider);
 
     return Scaffold(
+      key: _key, // Assign the key to Scaffold.
+
       backgroundColor: const Color.fromRGBO(28, 27, 32, 1),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: const Color.fromRGBO(28, 27, 32, 1),
         scrolledUnderElevation: 0,
         title: TextField(
@@ -97,9 +102,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           decoration: InputDecoration(
             isDense: true,
             contentPadding: const EdgeInsets.all(8),
-            prefixIcon: Icon(
-              PhosphorIcons.list(),
-              color: const Color(0xfff2f2f2),
+            prefixIcon: GestureDetector(
+              onTap: () {
+                _key.currentState!.openDrawer();
+              },
+              child: Icon(
+                PhosphorIcons.list(),
+                color: const Color(0xfff2f2f2),
+              ),
             ),
             hintText: 'Search your music',
             hintStyle: Theme.of(context).textTheme.titleMedium,
@@ -127,6 +137,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         ),
       ),
       bottomNavigationBar: const BottomNavbar(),
+      drawer: DrawerPage(_key),
     );
   }
 }

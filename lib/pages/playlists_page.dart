@@ -11,19 +11,19 @@ class PlaylistsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            PhosphorIconsDuotone.listPlus,
-            size: 80,
+            Icons.playlist_add,
+            size: 120,
             color: Colors.purple.shade200,
           ),
-          Text(
+          const Text(
             'No playlist found',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.0),
             child: Text(
               'You can either create a new playlist or import a playlist by clicking on the \'+\' button',
               textAlign: TextAlign.center,

@@ -11,6 +11,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_room/on_audio_room.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -26,6 +27,7 @@ class _SongsPageState extends ConsumerState<SongsPage> {
   final ScrollController _semicircleController = ScrollController();
   bool loading = true;
   late ConcatenatingAudioSource playlist;
+  late ConcatenatingAudioSource recentplaylist;
 
   final permissionBox = Hive.box('permissionIsGranted');
 
@@ -92,9 +94,15 @@ class _SongsPageState extends ConsumerState<SongsPage> {
         .read(songsCountProvider.notifier)
         .update((state) => filteredAudios.length);
 
-    _createPlaylist(filteredAudios);
+    playlist = await _createPlaylist(filteredAudios);
+    recentplaylist = await _createPlaylist(filteredRecentAudios);
+
+    ref.read(songsPlaylist.notifier).update((state) => playlist);
+
+    ref.read(recentsongsPlaylist.notifier).update((state) => recentplaylist);
 
     setState(() {
+      // songs = a;
       loading = false;
     });
   }
@@ -111,8 +119,9 @@ class _SongsPageState extends ConsumerState<SongsPage> {
     return null;
   }
 
-  Future<void> _createPlaylist(List<SongModel> songs) async {
-    playlist = ConcatenatingAudioSource(
+  Future<ConcatenatingAudioSource> _createPlaylist(
+      List<SongModel> songs) async {
+    return ConcatenatingAudioSource(
       useLazyPreparation: true,
       children: await Future.wait(songs.map((song) async {
         final artworkUri = await _getArtworkUri(song);
@@ -133,7 +142,7 @@ class _SongsPageState extends ConsumerState<SongsPage> {
       }).toList()),
     );
     // return playlist;
-    setState(() {});
+    // setState(() {});
   }
 
   @override
@@ -143,32 +152,7 @@ class _SongsPageState extends ConsumerState<SongsPage> {
     final player = ref.watch(playerProvider);
 
     print("rebuilding songs page");
-    // if (songs != null) {
-    //   // return const Text('No song');
-    //   // playlist = ConcatenatingAudioSource(
-    //   //   // Start loading next item just before reaching it
-    //   //   useLazyPreparation: true,
-    //   // children: await Future.wait(songs.map((song) async {
-    //   //   final artworkUri = await _getArtworkUri(song);
-    //   //   return AudioSource.uri(
-    //   //     Uri.parse(song.uri!),
-    //   //     tag: MediaItem(
-    //   //       id: song.id.toString(),
-    //   //       title: song.title,
-    //   //       album: song.album,
-    //   //       artist: song.artist,
-    //   //       duration: Duration(microseconds: song.duration ?? 0),
-    //   //       artUri: artworkUri != null ? Uri.file(artworkUri) : null,
-    //   //       displayTitle: song.title,
-    //   //       displaySubtitle: song.artist,
-    //   //       displayDescription: song.album,
-    //   //     ),
-    //   //   );
-    //   // }).toList()),
-    //   // );
-    //   print("creating playlist");
-    //   _createPlaylist(songs);
-    // }
+
     if (loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -207,7 +191,7 @@ class _SongsPageState extends ConsumerState<SongsPage> {
                 controller: _semicircleController,
                 itemBuilder: (context, index) {
                   return GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       ref
                           .read(isMiniplayerOpenProvider.notifier)
                           .update((state) => true);
@@ -218,6 +202,11 @@ class _SongsPageState extends ConsumerState<SongsPage> {
                       player.setAudioSource(playlist,
                           initialIndex: index, initialPosition: Duration.zero);
                       player.play();
+
+                      await OnAudioRoom().addTo(
+                        RoomType.LAST_PLAYED,
+                        songs[index].getMap.toLastPlayedEntity(0),
+                      );
                     },
                     child: SongTile(
                       // index: index, playlist: playlist, song: songs[index]);

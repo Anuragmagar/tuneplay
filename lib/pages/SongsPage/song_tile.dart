@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_room/on_audio_room.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
@@ -14,6 +15,7 @@ class SongTile extends ConsumerStatefulWidget {
   final int index;
   // final ConcatenatingAudioSource playlist;
   final SongModel song;
+  // final SongEntity song;
   const SongTile(
       {required this.index,
       // required this.playlist,
@@ -43,7 +45,7 @@ class _SongTileState extends ConsumerState<SongTile> {
   @override
   void initState() {
     super.initState();
-    final songs = ref.read(songListProvider);
+    // final songs = ref.read(songListProvider);
     // if (songs != null && songs.isNotEmpty) {
     //   artworkFuture =
     //       audioQuery.queryArtwork(songs[widget.index].id, ArtworkType.AUDIO);
@@ -59,40 +61,40 @@ class _SongTileState extends ConsumerState<SongTile> {
         audioQuery.queryArtwork(widget.song.id, ArtworkType.AUDIO, size: 500);
   }
 
-  Future<String?> _getArtworkUri(SongModel song) async {
-    final artwork = await audioQuery.queryArtwork(song.id, ArtworkType.AUDIO);
+  // Future<String?> _getArtworkUri(SongModel song) async {
+  //   final artwork = await audioQuery.queryArtwork(song.id, ArtworkType.AUDIO);
 
-    if (artwork != null) {
-      final directory = await getTemporaryDirectory();
-      final artworkFile = File('${directory.path}/${song.id}.png');
-      await artworkFile.writeAsBytes(artwork);
-      return artworkFile.path;
-    }
-    return null;
-  }
+  //   if (artwork != null) {
+  //     final directory = await getTemporaryDirectory();
+  //     final artworkFile = File('${directory.path}/${song.id}.png');
+  //     await artworkFile.writeAsBytes(artwork);
+  //     return artworkFile.path;
+  //   }
+  //   return null;
+  // }
 
-  Future<void> _createPlaylist(List<SongModel> songs) async {
-    playlist = ConcatenatingAudioSource(
-      useLazyPreparation: true,
-      children: await Future.wait(songs.map((song) async {
-        final artworkUri = await _getArtworkUri(song);
-        return AudioSource.uri(
-          Uri.parse(song.uri!),
-          tag: MediaItem(
-            id: song.id.toString(),
-            title: song.title,
-            album: song.album,
-            artist: song.artist,
-            duration: Duration(microseconds: song.duration ?? 0),
-            artUri: artworkUri != null ? Uri.file(artworkUri) : null,
-            displayTitle: song.title,
-            displaySubtitle: song.artist,
-            displayDescription: song.album,
-          ),
-        );
-      }).toList()),
-    );
-  }
+  // Future<void> _createPlaylist(List<SongModel> songs) async {
+  //   playlist = ConcatenatingAudioSource(
+  //     useLazyPreparation: true,
+  //     children: await Future.wait(songs.map((song) async {
+  //       final artworkUri = await _getArtworkUri(song);
+  //       return AudioSource.uri(
+  //         Uri.parse(song.uri!),
+  //         tag: MediaItem(
+  //           id: song.id.toString(),
+  //           title: song.title,
+  //           album: song.album,
+  //           artist: song.artist,
+  //           duration: Duration(microseconds: song.duration ?? 0),
+  //           artUri: artworkUri != null ? Uri.file(artworkUri) : null,
+  //           displayTitle: song.title,
+  //           displaySubtitle: song.artist,
+  //           displayDescription: song.album,
+  //         ),
+  //       );
+  //     }).toList()),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +115,7 @@ class _SongTileState extends ConsumerState<SongTile> {
       // },
       contentPadding: const EdgeInsets.symmetric(horizontal: 20),
       title: Text(
-        songs[widget.index].title,
+        widget.song.title,
         style: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
@@ -122,7 +124,7 @@ class _SongTileState extends ConsumerState<SongTile> {
         overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
-        '${songs[widget.index].artist}・${formatDuration(songs[widget.index].duration)}',
+        '${widget.song.artist}・${formatDuration(widget.song.duration)}',
         style: const TextStyle(color: Color.fromRGBO(218, 218, 218, 1)),
         overflow: TextOverflow.ellipsis,
         maxLines: 1,
@@ -167,11 +169,11 @@ class _SongTileState extends ConsumerState<SongTile> {
               print(playlist);
               // return CircularProgressIndicator();
               return ModalSheetBottom(
-                songs[widget.index].id,
-                songs[widget.index].title,
-                songs[widget.index].artist ?? "Unknown Artist",
-                songs[widget.index],
-                widget.index,
+                // widget.song.id,
+                // widget.song.title,
+                // widget.song.artist ?? "Unknown Artist",
+                widget.song,
+                // widget.index,
               );
             },
           );

@@ -50,3 +50,11 @@ final isShuffleModeProvider = StateProvider<bool>((ref) {
 final playingFromProvider = StateProvider<int>((ref) => 0);
 
 final permissionProvider = StateProvider<bool>((ref) => false);
+
+final versionProvider = StateProvider<String>((ref) => '1.0.0');
+
+final isVersionCheckedProvider = StateProvider<bool>((ref) => false);
+
+final songsPlaylist = StateProvider<ConcatenatingAudioSource?>((ref) => null);
+final recentsongsPlaylist =
+    StateProvider<ConcatenatingAudioSource?>((ref) => null);
