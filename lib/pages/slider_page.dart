@@ -3,7 +3,6 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:on_audio_query/on_audio_query.dart';
 import 'package:audio_app/manager/audio_player_manager.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -15,10 +14,6 @@ class SliderPage extends ConsumerStatefulWidget {
 }
 
 class _SliderPageState extends ConsumerState<SliderPage> {
-  // late Duration _position;
-  // Duration _position = const Duration(minutes: 0);
-  // Duration _bufferedPosition = const Duration(minutes: 0);
-
   late AudioPlayerManager manager;
 
   @override
@@ -31,21 +26,10 @@ class _SliderPageState extends ConsumerState<SliderPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     manager.dispose();
     durationState.drain();
     super.dispose();
   }
-
-  // Stream<DurationState>? durationState;
-
-// Stream<PositionData> get _positionDataStream =>
-//       Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
-//           _player.positionStream,
-//           _player.bufferedPositionStream,
-//           _player.durationStream,
-//           (position, bufferedPosition, duration) => PositionData(
-//               position, bufferedPosition, duration ?? Duration.zero));
 
   Stream<DurationState> durationState =
       Rx.combineLatest2<Duration, PlaybackEvent, DurationState>(
@@ -61,34 +45,6 @@ class _SliderPageState extends ConsumerState<SliderPage> {
   @override
   Widget build(BuildContext context) {
     final player = ref.read(playerProvider);
-    // final songs = ref.watch(songListProvider);
-
-    // player.positionStream.listen((p) {
-    //   setState(() {
-    //     _position = p;
-    //   });
-    // });
-
-    // player.bufferedPositionStream.listen((p) {
-    //   setState(() {
-    //     _bufferedPosition = p;
-    //   });
-    // });
-
-    // return StreamBuilder<DurationState>(
-    //   stream: _positionDataStream,
-    //   builder: (context, snapshot) {
-    //     final positionData = snapshot.data;
-    //     return SizedBox.shrink();
-    //     // return SeekBar(
-    //     //   duration: positionData?.duration ?? Duration.zero,
-    //     //   position: positionData?.position ?? Duration.zero,
-    //     //   bufferedPosition:
-    //     //       positionData?.bufferedPosition ?? Duration.zero,
-    //     //   onChangeEnd: _player.seek,
-    //     // );
-    //   },
-    // );
 
     return StreamBuilder<DurationState>(
       stream: durationState,

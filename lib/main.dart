@@ -8,15 +8,14 @@ import 'package:audio_app/pages/playlists_page.dart';
 import 'package:audio_app/pages/songs_page.dart';
 import 'package:audio_app/providers.dart';
 import 'package:audio_app/theme/color_schemes.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:on_audio_room/on_audio_room.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -33,8 +32,28 @@ Future<void> main() async {
   await Hive.openBox('permissionIsGranted');
 
   await OnAudioRoom().initRoom();
+  setOptimalDisplayMode();
 
   runApp(const ProviderScope(child: MyApp()));
+}
+
+Future<void> setOptimalDisplayMode() async {
+  final List<DisplayMode> supported = await FlutterDisplayMode.supported;
+  final DisplayMode active = await FlutterDisplayMode.active;
+
+  final List<DisplayMode> sameResolution = supported
+      .where(
+        (DisplayMode m) => m.width == active.width && m.height == active.height,
+      )
+      .toList()
+    ..sort(
+      (DisplayMode a, DisplayMode b) => b.refreshRate.compareTo(a.refreshRate),
+    );
+
+  final DisplayMode mostOptimalMode =
+      sameResolution.isNotEmpty ? sameResolution.first : active;
+
+  await FlutterDisplayMode.setPreferredMode(mostOptimalMode);
 }
 
 class MyApp extends StatelessWidget {

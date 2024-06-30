@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:audio_app/providers.dart';
-import 'package:byte_converter/byte_converter.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_downloader/flutter_file_downloader.dart';
@@ -35,7 +33,6 @@ class _DrawerPageState extends ConsumerState<DrawerPage> {
     super.initState();
     PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
       final appVersion = packageInfo.version;
-      print(appVersion);
       ref.read(versionProvider.notifier).update((state) => appVersion);
       vers = appVersion;
     });
@@ -49,13 +46,11 @@ class _DrawerPageState extends ConsumerState<DrawerPage> {
           await http.get(Uri.parse("https://tuneplay.anuragmagar.com.np/"));
       final body = json.decode(response.body)[0];
       if (body['version'] != vers) {
-        print('version mismatched');
         _showVersionMismatchDialog(
             body['version'], body['file_size'], body['file_name']);
       } else {
         ref.read(isVersionCheckedProvider.notifier).update((state) => true);
       }
-      print(body);
     }
   }
 
@@ -67,8 +62,6 @@ class _DrawerPageState extends ConsumerState<DrawerPage> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            // ByteConverter converter = ByteConverter(downloadedBytes);
-
             return AlertDialog(
               icon: const Icon(Icons.info),
               title: const Text('Update Available'),
@@ -117,7 +110,6 @@ class _DrawerPageState extends ConsumerState<DrawerPage> {
                   child: Text('Download v.$version'),
                   onPressed: () async {
                     String filePath = await _localPath;
-                    print(filePath);
                     // setState(() {
                     //   downloading = true;
                     // });
@@ -127,7 +119,6 @@ class _DrawerPageState extends ConsumerState<DrawerPage> {
                       name: fileName,
                       subPath: '/TunePlay',
                       onProgress: (String? fileName, double progress) {
-                        print('FILE fileName HAS PROGRESS $progress');
                         setState(() {
                           downloadedBytes = progress / 100;
                         });
@@ -144,9 +135,7 @@ class _DrawerPageState extends ConsumerState<DrawerPage> {
                             .read(isVersionCheckedProvider.notifier)
                             .update((state) => true);
                       },
-                      onDownloadError: (String error) {
-                        print('DOWNLOAD ERROR: $error');
-                      },
+                      onDownloadError: (String error) {},
                       downloadDestination: DownloadDestinations.publicDownloads,
                     );
                   },

@@ -57,6 +57,7 @@ class _SongsPageState extends ConsumerState<SongsPage> {
     if (status.isGranted) {
       await getSongs();
       permissionBox.put("permissionIsGranted", true);
+      ref.read(permissionProvider.notifier).update((state) => true);
     }
 
     setState(() {
@@ -100,6 +101,8 @@ class _SongsPageState extends ConsumerState<SongsPage> {
     ref.read(songsPlaylist.notifier).update((state) => playlist);
 
     ref.read(recentsongsPlaylist.notifier).update((state) => recentplaylist);
+
+    ref.read(permissionProvider.notifier).update((state) => true);
 
     setState(() {
       // songs = a;

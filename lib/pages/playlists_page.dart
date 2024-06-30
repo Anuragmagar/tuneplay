@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class PlaylistsPage extends StatelessWidget {
   const PlaylistsPage({super.key});

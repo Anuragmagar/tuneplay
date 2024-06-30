@@ -1,12 +1,10 @@
 import 'package:audio_app/pages/artist_detail_page.dart';
 import 'package:audio_app/pages/sorting_album.dart';
 import 'package:audio_app/providers.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ArtistsPage extends ConsumerStatefulWidget {
@@ -20,22 +18,22 @@ class ArtistsPage extends ConsumerStatefulWidget {
 class _ArtistsPageState extends ConsumerState<ArtistsPage> {
   final OnAudioQuery audioQuery = OnAudioQuery();
   final permissionBox = Hive.box('permissionIsGranted');
-  bool permission = true;
+  // bool permission = true;
 
   @override
   void initState() {
     super.initState();
 
-    if (permissionBox.get('permissionIsGranted') == null) {
-      setState(() {
-        permission = false;
-      });
-    }
+    // if (permissionBox.get('permissionIsGranted') == null) {
+    //   setState(() {
+    //     permission = false;
+    //   });
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
-    // final permission = ref.watch(permissionProvider);
+    final permission = ref.watch(permissionProvider);
     if (!permission) {
       return const Center(
           child: Text('Please allow the permission before continuing.'));
@@ -87,7 +85,7 @@ class _ArtistsPageState extends ConsumerState<ArtistsPage> {
                       children: [
                         Stack(
                           children: [
-                            Container(
+                            SizedBox(
                               height: 165,
                               width: double.infinity,
                               child: GestureDetector(
@@ -106,7 +104,7 @@ class _ArtistsPageState extends ConsumerState<ArtistsPage> {
                                 },
                                 child: Stack(
                                   children: [
-                                    Container(
+                                    SizedBox(
                                       width: double.infinity,
                                       height: double.infinity,
                                       child: QueryArtworkWidget(

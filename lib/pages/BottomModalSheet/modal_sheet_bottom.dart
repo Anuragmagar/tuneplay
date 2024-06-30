@@ -1,26 +1,17 @@
-import 'dart:math';
 import 'dart:typed_data';
 import 'dart:io';
 import 'package:audio_app/providers.dart';
+import 'package:byte_converter/byte_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:just_audio_background/just_audio_background.dart';
-import 'package:media_scanner/media_scanner.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:on_audio_room/on_audio_room.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ModalSheetBottom extends ConsumerStatefulWidget {
   const ModalSheetBottom(this.song, {super.key});
-  // final int id;
-  // final String title;
-  // final String artist;
-  // final ConcatenatingAudioSource playlist;
   final SongModel song;
-  // final int tapIndex;
 
   @override
   ConsumerState<ModalSheetBottom> createState() => _ModalSheetBottomState();
@@ -55,9 +46,7 @@ class _ModalSheetBottomState extends ConsumerState<ModalSheetBottom> {
     bool fav = await _audioRoom.checkIn(
       RoomType.FAVORITES,
       song.id,
-      // song.getMap.toFavoritesEntity()
     );
-    print('from favourite $fav');
     setState(() {
       isFavourite = fav;
     });
@@ -74,7 +63,6 @@ class _ModalSheetBottomState extends ConsumerState<ModalSheetBottom> {
 
   @override
   void dispose() {
-    // _audioRoom.closeRoom();
     super.dispose();
   }
 
@@ -140,49 +128,9 @@ class _ModalSheetBottomState extends ConsumerState<ModalSheetBottom> {
         const Divider(
           color: Colors.white24,
         ),
-        ListTile(
-          onTap: () async {
-            // print(widget.playlist.length);
-            // print(widget.song);
-
-            // widget.playlist.insert(
-            //   widget.tapIndex + 1,
-            //   AudioSource.uri(
-            //     Uri.parse(widget.song.uri!),
-            //     tag: MediaItem(
-            //       id: widget.song.id.toString(),
-            //       album: widget.song.album,
-            //       title: widget.song.title,
-            //       artUri: Uri.parse('https://placehold.co/600x400'),
-            //     ),
-            //   ),
-            // );
-            print('added');
-
-            // final a =
-            //     await _audioRoom.createPlaylist('c', ignoreDuplicate: false);
-            // final b =
-            //     await _audioRoom.createPlaylist('b', ignoreDuplicate: false);
-
-            // print(a);
-            // final a = await _audioRoom.queryPlaylist(96397728);
-            final a = await _audioRoom.queryPlaylists();
-            final b = a
-                .where((food) => food.playlistName.toLowerCase().contains('a'))
-                .firstOrNull;
-
-            // final a = await _audioRoom.addTo(
-            //     RoomType.PLAYLIST, widget.song.getMap.toSongEntity(),
-            //     playlistKey: 96397728, ignoreDuplicate: false);
-
-            // final List<SongEntity> a =
-            //     await OnAudioRoom().queryAllFromPlaylist(96397728);
-            // print(a.first.displayName);
-            print(b);
-            // OnAudioRoom().addTo(RoomType.PLAYLIST, entity)
-          },
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          title: const Text(
+        const ListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 20),
+          title: Text(
             "Play next",
             style: TextStyle(
               color: Colors.white,
@@ -192,16 +140,15 @@ class _ModalSheetBottomState extends ConsumerState<ModalSheetBottom> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          leading: const Icon(
+          leading: Icon(
             PhosphorIconsFill.arrowUUpRight,
             color: Colors.white,
             size: 20,
           ),
         ),
-        ListTile(
-          onTap: () {},
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          title: const Text(
+        const ListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 20),
+          title: Text(
             "Go to album",
             style: TextStyle(
               color: Colors.white,
@@ -211,16 +158,15 @@ class _ModalSheetBottomState extends ConsumerState<ModalSheetBottom> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          leading: const Icon(
+          leading: Icon(
             PhosphorIconsFill.vinylRecord,
             color: Colors.white,
             size: 20,
           ),
         ),
-        ListTile(
-          onTap: () {},
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-          title: const Text(
+        const ListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 20),
+          title: Text(
             "Go to artist",
             style: TextStyle(
               color: Colors.white,
@@ -230,7 +176,7 @@ class _ModalSheetBottomState extends ConsumerState<ModalSheetBottom> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          leading: const Icon(
+          leading: Icon(
             PhosphorIconsRegular.user,
             color: Colors.white,
             size: 20,
@@ -241,6 +187,11 @@ class _ModalSheetBottomState extends ConsumerState<ModalSheetBottom> {
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
+                  Duration duration =
+                      Duration(milliseconds: widget.song.duration!);
+                  String minutes = '${duration.inMinutes}'.padLeft(2, '0');
+                  String seconds = '${duration.inSeconds % 60}'.padLeft(2, '0');
+
                   return AlertDialog(
                     backgroundColor: const Color.fromARGB(255, 37, 37, 37),
                     title: const Text('Details'),
@@ -268,10 +219,19 @@ class _ModalSheetBottomState extends ConsumerState<ModalSheetBottom> {
                             height: 15,
                           ),
                           const Text(
+                            'File Size',
+                            style: TextStyle(color: Colors.white60),
+                          ),
+                          Text(
+                              '${ByteConverter(double.parse(widget.song.size.toString())).megaBytes.toStringAsFixed(2)} MB'),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          const Text(
                             'File Duration',
                             style: TextStyle(color: Colors.white60),
                           ),
-                          Text(widget.song.duration.toString()),
+                          Text('$minutes:$seconds$minutes:$seconds'),
                           const SizedBox(
                             height: 15,
                           ),
@@ -308,15 +268,10 @@ class _ModalSheetBottomState extends ConsumerState<ModalSheetBottom> {
         ),
         ListTile(
           onTap: () async {
-            // File filePath = await toFile(widget.song.uri!);
-            // print(filePath.path);
-
             final result = await Share.shareXFiles(
                 [XFile(File(widget.song.data).path)],
                 text: 'Great picture');
-            if (result.status == ShareResultStatus.success) {
-              print('Thank you for sharing the picture!');
-            }
+            if (result.status == ShareResultStatus.success) {}
           },
           contentPadding: const EdgeInsets.symmetric(horizontal: 20),
           title: const Text(

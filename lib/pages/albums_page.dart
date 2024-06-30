@@ -1,13 +1,9 @@
-import 'package:audio_app/pages/Sorting.dart';
 import 'package:audio_app/pages/sorting_album.dart';
 import 'package:audio_app/providers.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import 'package:overflow_text_animated/overflow_text_animated.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class AlbumsPage extends ConsumerStatefulWidget {
@@ -20,22 +16,22 @@ class AlbumsPage extends ConsumerStatefulWidget {
 class _AlbumsPageState extends ConsumerState<AlbumsPage> {
   final OnAudioQuery audioQuery = OnAudioQuery();
   final permissionBox = Hive.box('permissionIsGranted');
-  bool permission = true;
+  // bool permission = true;
 
   @override
   void initState() {
     super.initState();
 
-    if (permissionBox.get('permissionIsGranted') == null) {
-      setState(() {
-        permission = false;
-      });
-    }
+    // if (permissionBox.get('permissionIsGranted') == null) {
+    //   setState(() {
+    //     permission = false;
+    //   });
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
-    // final permission = ref.watch(permissionProvider);
+    final permission = ref.watch(permissionProvider);
     // SongModel song = songs![songIndex];
 
     if (!permission) {
@@ -94,7 +90,7 @@ class _AlbumsPageState extends ConsumerState<AlbumsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Stack(children: [
-                          Container(
+                          SizedBox(
                             height: 165,
                             width: double.infinity,
                             child: QueryArtworkWidget(
@@ -142,9 +138,9 @@ class _AlbumsPageState extends ConsumerState<AlbumsPage> {
                             right: 0,
                             top: 0,
                             child: Container(
-                              margin: EdgeInsets.all(5),
-                              padding: EdgeInsets.all(5),
-                              child: Icon(
+                              margin: const EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(5),
+                              child: const Icon(
                                 PhosphorIconsFill.dotsThreeOutlineVertical,
                                 color: Colors.white,
                                 size: 18,
@@ -152,7 +148,7 @@ class _AlbumsPageState extends ConsumerState<AlbumsPage> {
                             ),
                           )
                         ]),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
