@@ -173,6 +173,8 @@ class _SongTitlePageState extends ConsumerState<SongTitlePage> {
             // await isFav(song);
             // await check();
             if (add != 0) {
+              ref.read(favoritesProvider.notifier).update(
+                  (state) => [song.getMap.toFavoritesEntity(), ...state]);
               setState(() {
                 isFavourite = true;
               });
@@ -183,6 +185,9 @@ class _SongTitlePageState extends ConsumerState<SongTitlePage> {
                   RoomType.FAVORITES, // Specify the room type
                   fav.key,
                 );
+
+                ref.read(favoritesProvider.notifier).update(
+                    (state) => state..remove(song.getMap.toFavoritesEntity()));
 
                 setState(() {
                   isFavourite = false;

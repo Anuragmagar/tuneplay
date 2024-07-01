@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_room/on_audio_room.dart';
 
 final player = AudioPlayer();
 int currentIndex = player.currentIndex ?? 0;
@@ -58,3 +59,11 @@ final isVersionCheckedProvider = StateProvider<bool>((ref) => false);
 final songsPlaylist = StateProvider<ConcatenatingAudioSource?>((ref) => null);
 final recentsongsPlaylist =
     StateProvider<ConcatenatingAudioSource?>((ref) => null);
+
+final lastPlayedProvider = StateProvider<List<LastPlayedEntity>>((ref) {
+  return [];
+});
+
+final favoritesProvider = StateProvider<List<FavoritesEntity>>((ref) {
+  return [];
+});

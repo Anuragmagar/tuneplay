@@ -108,6 +108,14 @@ class _SongsPageState extends ConsumerState<SongsPage> {
       // songs = a;
       loading = false;
     });
+
+    List<LastPlayedEntity> query =
+        await OnAudioRoom().queryLastPlayed(sortType: RoomSortType.DATE_ADDED);
+    ref.read(lastPlayedProvider.notifier).update((state) => query);
+
+    List<FavoritesEntity> favouritesQuery =
+        await OnAudioRoom().queryFavorites(sortType: RoomSortType.DATE_ADDED);
+    ref.read(favoritesProvider.notifier).update((state) => favouritesQuery);
   }
 
   Future<String?> _getArtworkUri(SongModel song) async {
@@ -153,6 +161,7 @@ class _SongsPageState extends ConsumerState<SongsPage> {
     final songs = ref.watch(songListProvider);
     final miniplayer = ref.watch(isMiniplayerOpenProvider);
     final player = ref.watch(playerProvider);
+    final lastPlayedSongs = ref.watch(lastPlayedProvider);
 
     print("rebuilding songs page");
 
@@ -210,6 +219,17 @@ class _SongsPageState extends ConsumerState<SongsPage> {
                         RoomType.LAST_PLAYED,
                         songs[index].getMap.toLastPlayedEntity(0),
                       );
+
+                      // setState(() {
+                      //   lastPlayedSongs
+                      //       .add(songs[index].getMap.toLastPlayedEntity(0));
+                      //   print(lastPlayedSongs);
+                      // });
+
+                      ref.read(lastPlayedProvider.notifier).update((state) => [
+                            songs[index].getMap.toLastPlayedEntity(0),
+                            ...state
+                          ]);
                     },
                     child: SongTile(
                       // index: index, playlist: playlist, song: songs[index]);

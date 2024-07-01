@@ -20,26 +20,26 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   final OnAudioQuery audioQuery = OnAudioQuery();
   // late final ConcatenatingAudioSource playlist;
-  List<FavoritesEntity> favourites = [];
-  List<LastPlayedEntity> lastPlayed = [];
+  // List<FavoritesEntity> favourites = [];
+  // List<LastPlayedEntity> lastPlayed = [];
   final permissionBox = Hive.box('permissionIsGranted');
   // bool permission = true;
 
-  void getFavourites() async {
-    // await OnAudioRoom().clearAll();
-    List<FavoritesEntity> queryResult =
-        await OnAudioRoom().queryFavorites(sortType: RoomSortType.DATE_ADDED);
-    setState(() {
-      favourites = queryResult;
-    });
-  }
+  // void getFavourites() async {
+  //   // await OnAudioRoom().clearAll();
+  //   List<FavoritesEntity> queryResult =
+  //       await OnAudioRoom().queryFavorites(sortType: RoomSortType.DATE_ADDED);
+  //   setState(() {
+  //     favourites = queryResult;
+  //   });
+  // }
 
-  void getRecentlyPlayed() async {
-    List<LastPlayedEntity> query = await OnAudioRoom().queryLastPlayed();
-    setState(() {
-      lastPlayed = query;
-    });
-  }
+  // void getRecentlyPlayed() async {
+  //   List<LastPlayedEntity> query = await OnAudioRoom().queryLastPlayed();
+  // setState(() {
+  //   lastPlayed = query;
+  // });
+  // }
 
   @override
   void initState() {
@@ -51,11 +51,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     //   });
     // }
 
-    if (ref.read(permissionProvider) == true) {
-      getFavourites();
-      getRecentlyPlayed();
-      setState(() {});
-    }
+    // if (ref.read(permissionProvider) == true) {
+    // getFavourites();
+    // getRecentlyPlayed();
+    // setState(() {});
+    // }
   }
 
   @override
@@ -73,6 +73,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     final playlist = ref.watch(recentsongsPlaylist);
     final permission = ref.watch(permissionProvider);
     // final permission = true;
+    final lastPlayed = ref.watch(lastPlayedProvider);
+    final favourites = ref.watch(favoritesProvider);
+    // List<LastPlayedEntity> lastPlayed = [];
 
     if (!permission) {
       return const Center(
@@ -144,7 +147,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       ),
                                       IconButton(
                                         onPressed: () {
-                                          getFavourites();
+                                          // getFavourites();
                                         },
                                         icon: const Icon(
                                           PhosphorIconsBold.arrowClockwise,
@@ -168,6 +171,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           favourites[index]);
                                     },
                                   ),
+                                  // },
                                 ),
                               ],
                             )
@@ -182,7 +186,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                           Column(
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.all(20.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20.0),
                                   child: GestureDetector(
                                     onTap: () {},
                                     child: Row(
@@ -204,7 +209,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         ),
                                         IconButton(
                                           onPressed: () {
-                                            getRecentlyPlayed();
+                                            // getRecentlyPlayed();
                                           },
                                           icon: const Icon(
                                             PhosphorIconsBold.arrowClockwise,
@@ -220,16 +225,34 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   height: 400,
                                   // width: double.infinity,
                                   child: Scrollbar(
-                                    child: ListView.builder(
-                                      physics: const BouncingScrollPhysics(),
-                                      // scrollDirection: Axis.horizontal,
-                                      itemCount: lastPlayed.length,
-                                      // itemCount: 10,
-                                      itemBuilder: (context, index) {
-                                        return HomeLastPlayed(
-                                            lastPlayed[index]);
-                                      },
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: GridView.builder(
+                                        itemCount: lastPlayed.length,
+                                        gridDelegate:
+                                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          crossAxisSpacing: 20,
+                                          // mainAxisSpacing: 1,
+                                          childAspectRatio: 0.76,
+                                        ),
+                                        itemBuilder: ((context, index) {
+                                          return HomeLastPlayed(
+                                              lastPlayed[index]);
+                                        }),
+                                      ),
                                     ),
+                                    // ListView.builder(
+                                    //   physics: const BouncingScrollPhysics(),
+                                    //   // scrollDirection: Axis.horizontal,
+                                    //   itemCount: lastPlayed.length,
+                                    //   // itemCount: 10,
+                                    //   itemBuilder: (context, index) {
+                                    //     return HomeLastPlayed(
+                                    //         lastPlayed[index]);
+                                    //   },
+                                    // ),
                                   ),
                                 )
                               ],
