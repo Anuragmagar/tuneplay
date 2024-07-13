@@ -32,7 +32,7 @@ Future<void> main() async {
   await Hive.openBox('permissionIsGranted');
 
   await OnAudioRoom().initRoom();
-  setOptimalDisplayMode();
+  await setOptimalDisplayMode();
 
   runApp(const ProviderScope(child: MyApp()));
 }

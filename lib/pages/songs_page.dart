@@ -48,16 +48,38 @@ class _SongsPageState extends ConsumerState<SongsPage> {
     final int androidVersion = int.parse(androidInfo.version.release);
 
     PermissionStatus status;
+    // PermissionStatus noti;
+
     if (androidVersion < 13) {
-      status = await Permission.storage.request();
+      print("android 13");
+      status = await Permission.storage.status;
+      // noti = PermissionStatus.granted;
+
+      if (!status.isGranted) {
+        status = await Permission.storage.request();
+      }
     } else {
-      status = await Permission.audio.request();
+      print('android 14');
+      status = await Permission.audio.status;
+      var noti = await Permission.notification.status;
+
+      if (!status.isGranted) {
+        status = await Permission.audio.request();
+      }
+
+      if (!noti.isGranted) {
+        print("Asking permission for notification");
+        noti = await Permission.notification.request();
+      }
     }
 
     if (status.isGranted) {
       await getSongs();
       permissionBox.put("permissionIsGranted", true);
       ref.read(permissionProvider.notifier).update((state) => true);
+    } else {
+      // Handle case when permissions are not granted
+      print("Permissions not granted");
     }
 
     setState(() {
@@ -119,7 +141,8 @@ class _SongsPageState extends ConsumerState<SongsPage> {
   }
 
   Future<String?> _getArtworkUri(SongModel song) async {
-    final artwork = await audioQuery.queryArtwork(song.id, ArtworkType.AUDIO);
+    final artwork =
+        await audioQuery.queryArtwork(song.id, ArtworkType.AUDIO, size: 1000);
 
     if (artwork != null) {
       final directory = await getTemporaryDirectory();
